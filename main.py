@@ -156,6 +156,7 @@ async def get_models():
 
 @app.post("/v1/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
+    global POE_API_KEY
     try:
         # 获取对应的Poe机器人名称
         bot_name = MODEL_MAPPING.get(request.model)
