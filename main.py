@@ -1,5 +1,6 @@
 import time
 import uuid
+import os
 from typing import List, Optional, Dict, Any
 import fastapi
 import uvicorn
@@ -19,8 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 你的Poe API密钥
-POE_API_KEY = ""
+POE_API_KEY = None
 
 # 模型名称映射到Poe机器人
 MODEL_MAPPING = {
@@ -96,7 +96,9 @@ MODEL_MAPPING = {
     # Other miscellaneous or less common models
     "web-search": "Web-Search",
     "mistral-medium": "Mistral-Medium",
-    "mistral-small-3.1": "Mistral-Small-3.1"
+    "mistral-small-3.1": "Mistral-Small-3.1",
+    "App-Creator": "App-Creator",
+    "Assistant": "Assistant",
 }
 
 
@@ -159,6 +161,9 @@ async def chat_completions(request: ChatCompletionRequest):
         bot_name = MODEL_MAPPING.get(request.model)
         if not bot_name:
             bot_name = MODEL_MAPPING.get("gpt-3.5-turbo")  # 默认
+        
+        # 获取APIKEY
+        POE_API_KEY = request.api_key if hasattr(request, 'api_key') else os.getenv('POE_API_KEY')
 
         # 转换消息格式为Poe格式
         poe_messages = [
